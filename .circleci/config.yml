@@ -1,16 +1,21 @@
 version: 2.1
 
-executors:
-  executor:
-    machine:
-        image: ubuntu-1604:201903-01
+orbs:
+  python: circleci/python@0.2.1
 
 jobs:
-  build:
-      executor: executor
-      steps:
-        - checkout
-        - run:
-            name: Run precommit check
-            command: make precommit
-          
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: ./manage.py test
+          name: Test
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
